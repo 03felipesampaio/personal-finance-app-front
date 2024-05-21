@@ -1,8 +1,6 @@
 <template>
   <div id="main-pannel">
-    <div id="left-side-bar">
-      <LeftSideBar :sideBarOptions="sideBarOptions" v-model:selectedSideBar="selectedSideBar" />
-    </div>
+    <LeftSideBar :sideBarOptions="sideBarOptions" v-model:selectedSideBar="selectedSideBar" />
     <div id="main-tab">
       <UploadFiles v-if="selectedSideBar === sideBarOptions.IMPORT" />
       <TransactionsTab v-if="selectedSideBar === sideBarOptions.TRANSACTIONS" />
@@ -36,15 +34,6 @@ const selectedSideBar = ref(sideBarOptions.TRANSACTIONS)
 <style>
 #main-pannel {
   display: flex;
-}
-
-#left-side-bar {
-  display: flex;
-  flex-direction: column;
-
-  height: 100%;
-  width: 20px;
-  flex-grow: 1;
 }
 
 #main-tab {
