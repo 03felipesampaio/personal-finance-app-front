@@ -1,0 +1,36 @@
+html {
+  background-color: #f0f0f0;
+
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#main-pannel {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+.main-pannel-item {
+  margin: 20px;
+
+  /* Padding */
+  padding: 15px;
+
+  /* Border */
+}
+
+/* Source Bar */
+#source-bar {
+  flex-grow: 1;
+
+  border-right: 2px solid #d3d3d3;
+}
+
+#transactions-table-pannel {
+  flex-grow: 8;
+}
+
+#rule-bar {
+  flex-grow: 3;
+
+  border-left: 2px solid #d3d3d3;
+}

@@ -1,0 +1,34 @@
+<template>
+  <div class="main-pannel-item" id="transactions-table-pannel">
+    <h2>Transaction Table</h2>
+    <table class="table" id="table-transactions">
+      <thead class="">
+        <th>File ID</th>
+        <th>Place</th>
+        <th>Description</th>
+        <th>Value</th>
+      </thead>
+      <tr v-for="trn in transactions" :key="trn.id">
+        <td>{{ trn.fileId }}</td>
+        <td>{{ trn.place }}</td>
+        <td>{{ trn.description }}</td>
+        <td>{{ trn.value }}</td>
+      </tr>
+    </table>
+  </div>
+</template>
+
+<script setup>
+const transactions = defineModel('transactions')
+</script>
+
+<style>
+#table-transactions {
+  display: flexbox;
+}
+
+/* #table-transactions thead,
+tr {
+  color: black;
+} */
+</style>
