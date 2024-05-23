@@ -10,13 +10,13 @@ html {
 }
 
 body {
-  height: 100vh;
+  height: 100%;
   padding: 0;
   margin: 0;
 }
 
 /* When I try to change this to body > *, messes up everythig */
-body * {
+body > div {
   height: 100%;
 }
 
@@ -45,8 +45,4 @@ body * {
   flex-grow: 8;
 }
 
-#rule-bar {
-  flex-grow: 3;
 
-  border-left: 2px solid #d3d3d3;
-}

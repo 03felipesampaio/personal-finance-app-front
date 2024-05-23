@@ -34,6 +34,7 @@ const selectedSideBar = ref(sideBarOptions.TRANSACTIONS)
 <style>
 #main-pannel {
   display: flex;
+  height: 100%;
 }
 
 #main-tab {

@@ -24,9 +24,9 @@
     />
     <RulesBar v-if="selectedSideBar === sideBarOptions.RULES" class="transactions-menu-item" />
   </div>
-  <div id="transactions-table-tab">
-    <TransactionsTable :checkedFiles="checkedFiles" v-model:transactions="transactionsFiltered" />
-  </div>
+  <TransactionsTable :checkedFiles="checkedFiles" v-model:transactions="transactionsFiltered" />
+  <!-- <div id="transactions-table-tab">
+  </div> -->
 </template>
 
 <script setup>
@@ -146,19 +146,27 @@ const transactionsFiltered = computed(() => {
   border-radius: 15px;
 }
 
+.transactions-side-bar-item img {
+  height: 100%;
+}
+
 #transactions-menu {
-  padding: 10px;
+  padding: 0px;
+  background-color: #8d9eb3;
 }
 
 .transactions-menu-item {
-  width: 150px;
+  width: fit-content;
+  padding: 0 15px;
+  /* margin: 0 */
+  /* background-color: #3f4a57; */
 }
 
 /* #transactions-side-bar button {
   display: block;
 } */
 
-#transactions-table-tab {
+/* #transactions-table-tab {
   flex-grow: 12;
-}
+} */
 </style>

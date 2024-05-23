@@ -58,6 +58,11 @@ function changeSideBarOption(option) {
   border-radius: 15px;
 }
 
+.side-bar-item > img {
+  height: 90%;
+  width: 90%;
+}
+
 #left-side-bar button {
   height: 40px;
   width: 40px;

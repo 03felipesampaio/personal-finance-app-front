@@ -23,6 +23,11 @@ const transactions = defineModel('transactions')
 </script>
 
 <style>
+#transactions-table-pannel {
+  margin: 0;
+  padding: 0;
+}
+
 #table-transactions {
   /* display: flexbox; */
   width: 100%;
