@@ -1,8 +1,8 @@
 <template>
   <div class="main-pannel-item" id="transactions-table-pannel">
     <h2>Transaction Table</h2>
-    <table class="table" id="table-transactions">
-      <thead class="">
+    <table id="table-transactions">
+      <thead >
         <th>File ID</th>
         <th>Place</th>
         <th>Description</th>
@@ -24,9 +24,13 @@ const transactions = defineModel('transactions')
 
 <style>
 #table-transactions {
-  display: flexbox;
+  /* display: flexbox; */
+  width: 100%;
 }
 
+td {
+  text-align: center;
+}
 /* #table-transactions thead,
 tr {
   color: black;

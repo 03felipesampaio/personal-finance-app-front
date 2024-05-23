@@ -15,6 +15,7 @@ body {
   margin: 0;
 }
 
+/* When I try to change this to body > *, messes up everythig */
 body * {
   height: 100%;
 }

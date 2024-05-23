@@ -1,15 +1,28 @@
 <template>
   <div id="transactions-side-bar">
-    <button @click="changeSideBarOption(sideBarOptions.FILES)">Source Files</button>
+    <div class="transactions-side-bar-item" @click="changeSideBarOption(sideBarOptions.FILES)">
+      <!-- <a href="https://www.flaticon.com/br/icones-gratis/pasta" title="pasta ícones">Pasta ícones criados por maswan - Flaticon</a> -->
+      <img src="../icons/file-and-folder.png" alt="Filter files" />
+    </div>
+    <div class="transactions-side-bar-item" @click="changeSideBarOption(sideBarOptions.FILTERS)">
+      <!-- <a href="https://www.flaticon.com/br/icones-gratis/filtro" title="filtro ícones">Filtro ícones criados por berkahicon - Flaticon</a> -->
+      <img src="../icons/filtro.png" alt="Filters" />
+    </div>
+    <div class="transactions-side-bar-item" @click="changeSideBarOption(sideBarOptions.RULES)">
+      <!-- <a href="https://www.flaticon.com/br/icones-gratis/regras" title="regras ícones">Regras ícones criados por Muhammad_Usman - Flaticon</a> -->
+      <img src="../icons/pros-e-contras.png" alt="Rules" />
+    </div>
+    <!-- <button @click="changeSideBarOption(sideBarOptions.FILES)">Source Files</button>
     <button @click="changeSideBarOption(sideBarOptions.FILTERS)">Filters</button>
-    <button @click="changeSideBarOption(sideBarOptions.RULES)">Rules</button>
+    <button @click="changeSideBarOption(sideBarOptions.RULES)">Rules</button> -->
   </div>
-  <div>
+  <div id="transactions-menu">
     <SourceBar
       v-if="selectedSideBar === sideBarOptions.FILES"
       v-model:sourceBarFileOrder="sourceBarFileOrder"
+      class="transactions-menu-item"
     />
-    <RulesBar v-if="selectedSideBar === sideBarOptions.RULES" />
+    <RulesBar v-if="selectedSideBar === sideBarOptions.RULES" class="transactions-menu-item" />
   </div>
   <div id="transactions-table-tab">
     <TransactionsTable :checkedFiles="checkedFiles" v-model:transactions="transactionsFiltered" />
@@ -110,9 +123,35 @@ const transactionsFiltered = computed(() => {
 
 <style>
 #transactions-side-bar {
-  flex-grow: 1;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 15px;
+
+  height: 100%;
+  width: 60px;
+  /* flex-grow: 1; */
+
+  background-color: #3f4a57;
+}
+
+.transactions-side-bar-item {
+  background-color: #ffe66d;
+
+  width: 40px;
+  height: 40px;
+  padding: 3px;
+
+  border: solid 1px;
+  border-radius: 15px;
+}
+
+#transactions-menu {
+  padding: 10px;
+}
+
+.transactions-menu-item {
+  width: 150px;
 }
 
 /* #transactions-side-bar button {
