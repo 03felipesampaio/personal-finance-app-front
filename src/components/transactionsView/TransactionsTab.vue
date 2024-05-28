@@ -33,6 +33,7 @@
 import SourceBar from './SourceBar.vue'
 import TransactionsTable from './TransactionsTable.vue'
 import RulesBar from './RulesBar.vue'
+import {mockedGetAllSourcesResponse, transactions} from '../../mockApi'
 
 import { computed, ref } from 'vue'
 
@@ -47,14 +48,17 @@ function changeSideBarOption(option) {
   selectedSideBar.value = selectedSideBar.value !== option ? option : sideBarOptions.INVISIBLE
 }
 
+const sourceBarFileOrder = ref(mockedGetAllSourcesResponse)
+
 const checkedFiles = computed(() => {
   const checked = []
 
-  for (let bank of sourceBarFileOrder.value) {
-    for (let bankFile of bank.bankFiles) {
-      if (bankFile.show === true) {
-        checked.push(bankFile.id)
-      }
+  for (let bank in sourceBarFileOrder.value) {
+    for (let sourceType in (sourceBarFileOrder.value)[bank]) {
+      for (let bankFile of (sourceBarFileOrder.value)[bank][sourceType])
+        if (bankFile.show === true) {
+          checked.push(bankFile.sourceID)
+        }
     }
   }
 
@@ -63,59 +67,9 @@ const checkedFiles = computed(() => {
 
 const selectedSideBar = ref(sideBarOptions.FILES)
 
-const transactions = ref([
-  { fileId: 1, id: 0, place: 'Some 1', description: 'Some Desc', value: 54.3 },
-  { fileId: 1, id: 1, place: 'Some 1', description: 'Some Desc', value: 54.3 },
-  { fileId: 2, id: 2, place: 'Some 2', description: 'Some Desc', value: 54.3 },
-  { fileId: 2, id: 3, place: 'Some 2', description: 'Some Desc', value: 54.3 },
-  { fileId: 3, id: 4, place: 'Some 3', description: 'Some Desc', value: 54.3 },
-  { fileId: 3, id: 5, place: 'Some 3', description: 'Some Desc', value: 54.3 },
-  { fileId: 4, id: 6, place: 'Some 4', description: 'Some Desc', value: 54.3 },
-  { fileId: 4, id: 7, place: 'Some 4', description: 'Some Desc', value: 54.3 }
-])
-
-const sourceBarFileOrder = ref([
-  {
-    bankName: 'Inter',
-    bankFiles: [
-      {
-        fileName: 'ABC.ofx',
-        show: true,
-        id: 1
-      },
-      {
-        fileName: 'CBA.ofx',
-        show: false,
-        id: 2
-      }
-    ]
-  },
-  {
-    bankName: 'Nubank',
-    bankFiles: [
-      {
-        fileName: 'ABC.pdf',
-        show: false,
-        id: 3
-      },
-      {
-        fileName: 'CBA.pdf',
-        show: true,
-        id: 4
-      }
-    ]
-  }
-])
 
 const transactionsFiltered = computed(() => {
-  const filteredTransactions = []
-
-  for (let trn of transactions.value) {
-    if (checkedFiles.value.includes(trn.fileId)) {
-      filteredTransactions.push(trn)
-    }
-  }
-
+  const filteredTransactions = transactions.filter(trn => checkedFiles.value.includes(trn.sourceId))
   return filteredTransactions
 })
 // defineProps()

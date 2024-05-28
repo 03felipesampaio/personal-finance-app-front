@@ -1,40 +1,78 @@
 <template>
   <div class="main-pannel-item" id="transactions-table-pannel">
-    <h2>Transaction Table</h2>
     <table id="table-transactions">
       <thead >
-        <th>File ID</th>
-        <th>Place</th>
-        <th>Description</th>
-        <th>Value</th>
+        <tr>
+          <th>File ID</th>
+          <th>Date</th>
+          <th>Description</th>
+          <th>Place</th>
+          <th>Category</th>
+          <th>Value</th>
+        </tr>
       </thead>
-      <tr v-for="trn in transactions" :key="trn.id">
-        <td>{{ trn.fileId }}</td>
-        <td>{{ trn.place }}</td>
-        <td>{{ trn.description }}</td>
-        <td>{{ trn.value }}</td>
-      </tr>
+      <tbody>
+        <tr v-for="trn in transactions" :key="trn.id">
+          <td>{{ trn.sourceId }}</td>
+          <td>{{ trn.date }}</td>
+          <td>{{ trn.description }}</td>
+          <td>{{ trn.place }}</td>
+          <td>{{ trn.category }}</td>
+          <td>{{ trn.value }}</td>
+        </tr>
+      </tbody>
     </table>
   </div>
 </template>
 
 <script setup>
 const transactions = defineModel('transactions')
+console.log(transactions);
 </script>
 
 <style>
 #transactions-table-pannel {
   margin: 0;
   padding: 0;
+
+  overflow-y: scroll;
 }
 
 #table-transactions {
   /* display: flexbox; */
+  border-collapse: collapse;
+  font-size: 0.9em;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  /* margin: 25px 0; */
   width: 100%;
 }
 
+
+#table-transactions thead tr {
+  background-color: #009879;
+  color: #ffffff;
+  text-align: left;
+}
+
+#table-transactions th, #table-transactions td {
+  padding: 5px 5px;
+}
+
+#table-transactions tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+#table-transactions tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+#table-transactions tbody tr:last-of-type {
+    border-bottom: 2px solid #009879;
+}
+
+
 td {
-  text-align: center;
+  text-align: left;
 }
 /* #table-transactions thead,
 tr {
