@@ -46,16 +46,19 @@
     <div id="add-rules-menu">
       <h4>Add rules</h4>
       <!-- <label for="add-rule-pattern">Add rule pattern for description</label> -->
-      <input type="text" placeholder="Pattern" id="add-rule-pattern" />
+      <input type="text" placeholder="Pattern" id="add-rule-pattern" v-model="pattern"/>
       <!-- <label for=""></label> -->
       <input type="text" placeholder="Effect" id="add-rule-effect" />
+      <!-- <input type="checkbox" id="show"> -->
 
       <button>Add</button>
     </div>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+const pattern = defineModel('pattern')
+</script>
 
 <style>
 #add-rules-menu input {

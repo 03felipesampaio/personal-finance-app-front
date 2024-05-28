@@ -22,9 +22,17 @@
       v-model:sourceBarFileOrder="sourceBarFileOrder"
       class="transactions-menu-item"
     />
-    <RulesBar v-if="selectedSideBar === sideBarOptions.RULES" class="transactions-menu-item" />
+    <RulesBar 
+      v-if="selectedSideBar === sideBarOptions.RULES" 
+      v-model:pattern="pattern" 
+      v-model:transactions="transactionsFiltered" 
+      class="transactions-menu-item" 
+    />
   </div>
-  <TransactionsTable :checkedFiles="checkedFiles" v-model:transactions="transactionsFiltered" />
+  <TransactionsTable 
+    :patternMatchedTransactionIds="matchedTransactionsIds"
+    v-model:transactions="transactionsFiltered" 
+  />
   <!-- <div id="transactions-table-tab">
   </div> -->
 </template>
@@ -67,11 +75,24 @@ const checkedFiles = computed(() => {
 
 const selectedSideBar = ref(sideBarOptions.FILES)
 
-
 const transactionsFiltered = computed(() => {
   const filteredTransactions = transactions.filter(trn => checkedFiles.value.includes(trn.sourceId))
   return filteredTransactions
 })
+
+const pattern = ref('')
+
+const matchedTransactionsIds = computed(() => {
+  const regex = RegExp('^' + pattern.value)
+  let matched = []
+
+  if (pattern.value !== '') {
+    matched = transactionsFiltered.value.filter(trn => regex.test(trn.description))
+  }
+
+  return matched.map(trn => trn.id)
+})
+
 // defineProps()
 </script>
 

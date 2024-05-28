@@ -3,7 +3,7 @@
     <table id="table-transactions">
       <thead >
         <tr>
-          <th>File ID</th>
+          <!-- <th>File ID</th> -->
           <th>Date</th>
           <th>Description</th>
           <th>Place</th>
@@ -12,8 +12,8 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="trn in transactions" :key="trn.id">
-          <td>{{ trn.sourceId }}</td>
+        <tr v-for="trn in transactions" :key="trn.id" :class="{highlited: patternMatchedTransactionIds.includes(trn.id)}">
+          <!-- <td>{{ trn.sourceId }}</td> -->
           <td>{{ trn.date }}</td>
           <td>{{ trn.description }}</td>
           <td>{{ trn.place }}</td>
@@ -27,7 +27,7 @@
 
 <script setup>
 const transactions = defineModel('transactions')
-console.log(transactions);
+defineProps(['patternMatchedTransactionIds'])
 </script>
 
 <style>
@@ -58,18 +58,21 @@ console.log(transactions);
   padding: 5px 5px;
 }
 
-#table-transactions tbody tr {
-    border-bottom: 1px solid #dddddd;
+.highlited {
+  background-color: #61d6bf57;
 }
 
-#table-transactions tbody tr:nth-of-type(even) {
-    background-color: #f3f3f3;
+#table-transactions tbody tr {
+  border-bottom: 1px solid #dddddd;
 }
+
+/* #table-transactions tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+} */
 
 #table-transactions tbody tr:last-of-type {
-    border-bottom: 2px solid #009879;
+  border-bottom: 2px solid #009879;
 }
-
 
 td {
   text-align: left;
