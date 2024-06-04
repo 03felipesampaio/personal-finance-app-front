@@ -25,7 +25,7 @@
     <RulesBar 
       v-if="selectedSideBar === sideBarOptions.RULES" 
       v-model:pattern="pattern" 
-      v-model:transactions="transactionsFiltered" 
+      v-model:transactions="transactionsFiltered"
       class="transactions-menu-item" 
     />
   </div>
@@ -132,7 +132,7 @@ const matchedTransactionsIds = computed(() => {
 
 .transactions-menu-item {
   width: fit-content;
-  padding: 0 15px;
+  padding: 0 5px;
   /* margin: 0 */
   /* background-color: #3f4a57; */
 }
