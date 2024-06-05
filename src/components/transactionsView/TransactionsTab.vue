@@ -20,6 +20,7 @@
     <SourceBar
       v-if="selectedSideBar === sideBarOptions.FILES"
       v-model:sourceBarFileOrder="sourceBarFileOrder"
+      v-on:toggle-source="(source) => getTransactions(source)"
       class="transactions-menu-item"
     />
     <RulesBar 
@@ -41,10 +42,12 @@
 import SourceBar from './SourceBar.vue'
 import TransactionsTable from './TransactionsTable.vue'
 import RulesBar from './RulesBar.vue'
-import {mockedGetAllSourcesResponse, transactions} from '../../mockApi'
+// import {mockedGetAllSourcesResponse, transactions} from '../../mockApi'
+import {getAllSources, setupSourcesToSidePannel, getTransactionsFromSourceID} from '../../api'
 
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 
+// Side Bar controllers
 const sideBarOptions = {
   INVISIBLE: 0,
   FILES: 1,
@@ -52,12 +55,26 @@ const sideBarOptions = {
   RULES: 3
 }
 
+const selectedSideBar = ref(sideBarOptions.FILES)
+
 function changeSideBarOption(option) {
   selectedSideBar.value = selectedSideBar.value !== option ? option : sideBarOptions.INVISIBLE
 }
 
-const sourceBarFileOrder = ref(mockedGetAllSourcesResponse)
+// Source bar [Fetching API]
+const sourceBarFileOrder = ref([])
 
+async function getSourcesFromAPI() {
+  const response = await getAllSources()
+  sourceBarFileOrder.value = await setupSourcesToSidePannel(response.data)
+}
+
+onMounted(() => {
+  getSourcesFromAPI()
+})
+
+
+// IDs from all selected files
 const checkedFiles = computed(() => {
   const checked = []
 
@@ -73,10 +90,26 @@ const checkedFiles = computed(() => {
   return checked
 })
 
-const selectedSideBar = ref(sideBarOptions.FILES)
+
+
+// Transactions fetching and filtering
+const transactions = ref([])
+
+watch(checkedFiles, async () => {
+  for (const checkedFile of checkedFiles.value) {
+    if ( (transactions.value.filter(trn => trn.sourceId === checkedFile)).length === 0 ) {
+      const newTransactionsResponse = await getTransactionsFromSourceID(checkedFile)
+      transactions.value.push(...newTransactionsResponse.data)
+    }
+  }
+})
+
+async function getTransactions () {
+  
+}
 
 const transactionsFiltered = computed(() => {
-  const filteredTransactions = transactions.filter(trn => checkedFiles.value.includes(trn.sourceId))
+  const filteredTransactions = transactions.value.filter(trn => checkedFiles.value.includes(trn.sourceId))
   return filteredTransactions
 })
 
