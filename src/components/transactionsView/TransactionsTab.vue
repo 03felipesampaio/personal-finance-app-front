@@ -22,16 +22,18 @@
       v-model:sourceBarFileOrder="sourceBarFileOrder"
       class="transactions-menu-item"
     />
-    <RulesBar 
-      v-if="selectedSideBar === sideBarOptions.RULES" 
-      v-model:pattern="pattern" 
+    <RulesBar
+      v-if="selectedSideBar === sideBarOptions.RULES"
+      v-model:pattern="pattern"
       v-model:transactions="transactionsFiltered"
-      class="transactions-menu-item" 
+      v-model:show-only-matched="showOnlyMatched"
+      @fetch-matched-transactions="(trn) => (matchedTransactions = trn)"
+      class="transactions-menu-item"
     />
   </div>
-  <TransactionsTable 
-    :patternMatchedTransactionIds="matchedTransactionsIds"
-    v-model:transactions="transactionsFiltered" 
+  <TransactionsTable
+    :patternMatchedTransactionIds="matchedTransactions.map((trn) => trn.id)"
+    v-model:transactions="transactionsFiltered"
   />
   <!-- <div id="transactions-table-tab">
   </div> -->
@@ -42,7 +44,7 @@ import SourceBar from './SourceBar.vue'
 import TransactionsTable from './TransactionsTable.vue'
 import RulesBar from './RulesBar.vue'
 // import {mockedGetAllSourcesResponse, transactions} from '../../mockApi'
-import {getAllSources, setupSourcesToSidePannel, getTransactionsFromSourceID} from '../../api'
+import { getAllSources, setupSourcesToSidePannel, getTransactionsFromSourceID } from '../../api'
 
 import { computed, ref, onMounted, watch } from 'vue'
 
@@ -72,14 +74,13 @@ onMounted(() => {
   getSourcesFromAPI()
 })
 
-
 // IDs from all selected files
 const checkedFiles = computed(() => {
   const checked = []
 
   for (let bank in sourceBarFileOrder.value) {
-    for (let sourceType in (sourceBarFileOrder.value)[bank]) {
-      for (let bankFile of (sourceBarFileOrder.value)[bank][sourceType])
+    for (let sourceType in sourceBarFileOrder.value[bank]) {
+      for (let bankFile of sourceBarFileOrder.value[bank][sourceType])
         if (bankFile.show === true) {
           checked.push(bankFile.sourceID)
         }
@@ -89,14 +90,13 @@ const checkedFiles = computed(() => {
   return checked
 })
 
-
-
 // Transactions fetching and filtering
 const transactions = ref([])
+const matchedTransactions = ref([])
 
 watch(checkedFiles, async () => {
   for (const checkedFile of checkedFiles.value) {
-    if ( (transactions.value.filter(trn => trn.sourceId === checkedFile)).length === 0 ) {
+    if (transactions.value.filter((trn) => trn.sourceId === checkedFile).length === 0) {
       const newTransactionsResponse = await getTransactionsFromSourceID(checkedFile)
       transactions.value.push(...newTransactionsResponse.data)
     }
@@ -104,22 +104,21 @@ watch(checkedFiles, async () => {
 })
 
 const transactionsFiltered = computed(() => {
-  const filteredTransactions = transactions.value.filter(trn => checkedFiles.value.includes(trn.sourceId))
+  let filteredTransactions = transactions.value.filter((trn) =>
+    checkedFiles.value.includes(trn.sourceId)
+  )
+
+  if (showOnlyMatched.value) {
+    filteredTransactions = filteredTransactions.filter((trn) =>
+      matchedTransactions.value.map((match) => match.id).includes(trn.id)
+    )
+  }
+
   return filteredTransactions
 })
 
 const pattern = ref('')
-
-const matchedTransactionsIds = computed(() => {
-  const regex = RegExp('^' + pattern.value)
-  let matched = []
-
-  if (pattern.value !== '') {
-    matched = transactionsFiltered.value.filter(trn => regex.test(trn.description))
-  }
-
-  return matched.map(trn => trn.id)
-})
+const showOnlyMatched = ref(false)
 
 // defineProps()
 </script>
