@@ -20,7 +20,6 @@
     <SourceBar
       v-if="selectedSideBar === sideBarOptions.FILES"
       v-model:sourceBarFileOrder="sourceBarFileOrder"
-      v-on:toggle-source="(source) => getTransactions(source)"
       class="transactions-menu-item"
     />
     <RulesBar 
@@ -103,10 +102,6 @@ watch(checkedFiles, async () => {
     }
   }
 })
-
-async function getTransactions () {
-  
-}
 
 const transactionsFiltered = computed(() => {
   const filteredTransactions = transactions.value.filter(trn => checkedFiles.value.includes(trn.sourceId))

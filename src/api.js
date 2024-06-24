@@ -2,7 +2,8 @@
 import axios from 'axios';
 
 // const url = process.env.BACKEND_URL
-const url = 'http://10.3.3.9:8088'
+// const url = 'http://10.3.3.9:8088'
+const url = 'http://127.0.0.1:8000'
 
 async function getAllSources() {
     const response = await axios.get(url+'/sources')
@@ -37,11 +38,22 @@ async function getTransactionsFromSourceID (id) {
     return response
 }
 
-// console.log( getAllSources() );
+
+async function tryRule (rule) {
+    const response = await axios.post(url+'/rules/try', rule)
+    // const response = await axios.post(url+'/rules/try', {
+    //     "scope": "global",
+    //     "sources": null,
+    //     "pattern": "^.*Parcela (\\d{2})\\s+[dD]e\\s+(\\d{2})",
+    //     "effects": {
+    //         "currentInstallments": "$1",
+    //         "totalInstallments": "$2"
+    //     }
+    // })
+    // console.log(response.request);
+    const data = await response.data
+    return data
+}
 
 
-// console.log( setupSourcesToSidePannel(  getAllSources() ));
-
-export {getAllSources, setupSourcesToSidePannel, getTransactionsFromSourceID}
-// const hey = 'hey'
-// export {hey}
+export {getAllSources, setupSourcesToSidePannel, getTransactionsFromSourceID, tryRule}

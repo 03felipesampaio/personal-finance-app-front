@@ -47,21 +47,23 @@
       <h4>Add rules</h4>
       <!-- <label for="add-rule-pattern">Add rule pattern for description</label> -->
       <p>Scope</p>
-      <select v-model="ruleScope">
+      <select v-model="rule.scope">
         <option value="global">Global</option>
         <option value="files">Files</option>
       </select>
-      <select v-if=" ruleScope === 'files' " v-model=" sourceType ">
+      <select v-if=" rule.scope === 'files' " v-model=" rule.sources ">
         <option value="nubank-statements">Nubank statements</option>
         <option value="nubank-bills">Nubank bills</option>
         <option value="inter-statements">Inter statements</option>
         <option value="inter-bills">Inter bills</option>
       </select>
-      <input type="text" placeholder="Pattern" id="add-rule-pattern" v-model="pattern" />
+      <input type="text" placeholder="Pattern" id="add-rule-pattern" v-model="rule.pattern" />
+      <input type="checkbox" id="show-only-matched">
+      <label for="show-only-matched">Show only matched transactions</label>
       <!-- <label for=""></label> -->
       <p>Add side effects</p>
       <div id="side-effects">
-        <div v-for="effectInput in effects" class="side-effect" >
+        <div v-for="effectInput in rule.effects" class="side-effect" >
           <select class="column-option-effect" v-model="effectInput.column">
             <option value="place">Place</option>
             <option value="category">Category</option>
@@ -70,69 +72,86 @@
           <button @click="removeEffectInput(effectInput)">x</button>
 
         </div>
+        
         <button @click="addEffectInput">+</button>
       </div>
-      <!-- <input type="checkbox" id="show"> -->
-
+      <button @click="rule = getCleanRule()">Clear</button>
       <button @click="addRuleAndEffects">Add</button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { effect, ref, watch } from 'vue';
+import {tryRule} from '../../api'
 
 // const columns = ['Place']
 
-const emit = defineEmits(['create-rule'])
-
-const ruleScope = ref('global')
-const sourceType = ref(null)
 const pattern = defineModel('pattern')
+const emit = defineEmits(['create-rule', 'fetched-matched-transactions'])
 
-const effects = ref([{
-  'column': null,
-  'value': null
-}])
+const rule = ref(getCleanRule())
+
+function getCleanRule() {
+  pattern.value = ''
+
+  return {
+    'scope': null,
+    'sources': null,
+    'pattern': pattern,
+    'effects': [
+        {
+          'column': null,
+          'value': null
+        }
+    ]
+  }
+  
+}
 
 
 function addEffectInput() {
-  effects.value.push({
+  rule.value.effects.push({
     'column': null,
     'value': null
   })
 }
 
 function removeEffectInput(effectInput) {
-  effects.value.splice(effects.value.indexOf(effectInput), 1)
+  rule.value.effects.splice(effects.value.indexOf(effectInput), 1)
 }
 
 
+watch(rule, async () => {
+  if (rule.value.scope === null || rule.value.pattern === '') return
+
+  const ruleCopy = {...rule.value}
+
+  ruleCopy.effects = ruleCopy.effects.reduce((acc, effect) => {
+    if (effect.column !== null && effect.value !== null) acc[effect.column] = effect.value
+    return acc
+  }, {})
+
+  console.log(ruleCopy)
+
+  const matchedTransactions = await tryRule(ruleCopy)
+  console.log(matchedTransactions);
+
+  emit('fetched-matched-transactions')
+}, { deep: true })
+
+
 function addRuleAndEffects() {
-  if (pattern.length === 0 ) {
+  if (pattern.value.length === 0 ) {
     throw new Error("Rule can't be blank")
   }
 
-  if ( effects.value.filter(effect => effect.column === null || effect.value === null).length > 0 ) {
+  if ( rule.value.effects.filter(effect => effect.column === null || effect.value === null).length > 0 ) {
     throw new Error('There is a side effect with empty value or column')
   }
-  
-  const newRule = {
-    'scope': ruleScope.value,
-    'sourceType': sourceType.value,
-    'pattern': pattern.value,
-    'effects': effects.value.map(eff => eff),
-  };
 
-  ruleScope.value = 'global';
-  sourceType.value = null;
-  pattern.value = '';
-  effects.value = [{
-    'column': null,
-    'value': null
-  }];
-
-  emit('create-rule', newRule);
+  emit('create-rule', rule);
+  rule.value = getCleanRule()
 }
 </script>
 
