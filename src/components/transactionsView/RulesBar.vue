@@ -126,17 +126,19 @@ watch(
 
     const ruleCopy = { ...rule.value }
 
+    ruleCopy.pattern = '^' + ruleCopy.pattern
     ruleCopy.effects = ruleCopy.effects.reduce((acc, effect) => {
       if (effect.column !== null && effect.value !== null) acc[effect.column] = effect.value
       return acc
     }, {})
 
-    // console.log(ruleCopy)
-
-    const matchedTransactions = await tryRule(ruleCopy)
-    // console.log(matchedTransactions)
-
-    emit('fetchMatchedTransactions', matchedTransactions)
+    try {
+      const matchedTransactions = await tryRule(ruleCopy)
+      emit('fetchMatchedTransactions', matchedTransactions)
+    } catch (error) {
+      // TODO Add a red highlight to invalid fields
+      console.log('Invalid parameter in rule creation')
+    }
   },
   { deep: true }
 )

@@ -114,6 +114,15 @@ const transactionsFiltered = computed(() => {
     )
   }
 
+  for (const trn in filteredTransactions) {
+    if (matchedTransactions.value.map((match) => match.id).includes(filteredTransactions[trn].id)) {
+      const updatedTransaction = matchedTransactions.value.filter(
+        (match) => match.id === filteredTransactions[trn].id
+      )[0]
+      filteredTransactions[trn] = updatedTransaction
+    }
+  }
+
   return filteredTransactions
 })
 
