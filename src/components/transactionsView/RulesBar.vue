@@ -1,7 +1,7 @@
 <template>
   <div class="main-pannel-item" id="rule-bar">
     <h3>Rules Bar</h3>
-    <div id="current-transactions-rules">
+    <!-- <div id="current-transactions-rules">
       <h4>Current Rules</h4>
       <table>
         <thead>
@@ -42,7 +42,7 @@
           </td>
         </tr>
       </table>
-    </div>
+    </div> -->
     <div id="add-rules-menu">
       <h4>Add rules</h4>
       <!-- <label for="add-rule-pattern">Add rule pattern for description</label> -->
@@ -65,8 +65,11 @@
       <div id="side-effects">
         <div v-for="(effectInput, i) in rule.effects" class="side-effect" :key="'effect_' + i">
           <select class="column-option-effect" v-model="effectInput.column">
-            <option value="place">Place</option>
-            <option value="category">Category</option>
+            <option v-for="field in transactionsFields" :value="field" :key="field">
+              {{ field }}
+            </option>
+            <!-- <option value="place">Place</option>
+            <option value="category">Category</option> -->
           </select>
           <input type="text" placeholder="Effect" class="rule-effect" v-model="effectInput.value" />
           <button @click="removeEffectInput(effectInput)">x</button>
@@ -82,9 +85,11 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { tryRule } from '../../api'
+import { tryRule, createRule } from '../../api'
 
 // const columns = ['Place']
+
+defineProps(['transactionsFields'])
 
 const pattern = defineModel('pattern')
 const showOnlyMatched = defineModel('showOnlyMatched')
@@ -119,18 +124,44 @@ function removeEffectInput(effectInput) {
   rule.value.effects.splice(rule.value.effects.value.indexOf(effectInput), 1)
 }
 
+function copyRule() {
+  const ruleCopy = { ...rule.value }
+
+  ruleCopy.pattern = '^' + ruleCopy.pattern
+  ruleCopy.effects = ruleCopy.effects.reduce((acc, effect) => {
+    if (effect.column !== null && effect.value !== null) acc[effect.column] = effect.value
+    return acc
+  }, {})
+
+  return ruleCopy
+}
+
+function validateRule() {
+  if (rule.value.scope === null) {
+    throw new Error("Scope can't be blank")
+  }
+  if (pattern.value.length === 0) {
+    throw new Error("Rule can't be blank")
+  }
+  // if (
+  //   rule.value.effects.filter((effect) => effect.column === null || effect.value === null).length >
+  //   0
+  // ) {
+  //   throw new Error('There is a side effect with empty value or column')
+  // }
+}
+
 watch(
   rule,
   async () => {
-    if (rule.value.scope === null || rule.value.pattern === '') return
+    try {
+      validateRule()
+    } catch (error) {
+      console.log(error)
+      return
+    }
 
-    const ruleCopy = { ...rule.value }
-
-    ruleCopy.pattern = '^' + ruleCopy.pattern
-    ruleCopy.effects = ruleCopy.effects.reduce((acc, effect) => {
-      if (effect.column !== null && effect.value !== null) acc[effect.column] = effect.value
-      return acc
-    }, {})
+    const ruleCopy = copyRule()
 
     try {
       const matchedTransactions = await tryRule(ruleCopy)
@@ -143,19 +174,21 @@ watch(
   { deep: true }
 )
 
-function addRuleAndEffects() {
-  if (pattern.value.length === 0) {
-    throw new Error("Rule can't be blank")
+async function addRuleAndEffects() {
+  try {
+    validateRule()
+  } catch (error) {
+    console.log(error)
+    return
   }
 
-  if (
-    rule.value.effects.filter((effect) => effect.column === null || effect.value === null).length >
-    0
-  ) {
-    throw new Error('There is a side effect with empty value or column')
+  try {
+    await createRule(copyRule())
+  } catch (error) {
+    // TODO Add a red highlight to invalid fields
+    console.log(error)
   }
 
-  emit('create-rule', rule)
   rule.value = getCleanRule()
 }
 </script>
