@@ -24,6 +24,7 @@
     />
     <RulesBar
       v-if="selectedSideBar === sideBarOptions.RULES"
+      :transactions-fields="schemas.transactions"
       v-model:pattern="pattern"
       v-model:transactions="transactionsFiltered"
       v-model:show-only-matched="showOnlyMatched"
@@ -32,6 +33,7 @@
     />
   </div>
   <TransactionsTable
+    :table-columns="schemas.transactions"
     :patternMatchedTransactionIds="matchedTransactions.map((trn) => trn.id)"
     v-model:transactions="transactionsFiltered"
   />
@@ -44,7 +46,12 @@ import SourceBar from './SourceBar.vue'
 import TransactionsTable from './TransactionsTable.vue'
 import RulesBar from './RulesBar.vue'
 // import {mockedGetAllSourcesResponse, transactions} from '../../mockApi'
-import { getAllSources, setupSourcesToSidePannel, getTransactionsFromSourceID } from '../../api'
+import {
+  schemas,
+  getAllSources,
+  setupSourcesToSidePannel,
+  getTransactionsFromSourceID
+} from '../../api'
 
 import { computed, ref, onMounted, watch } from 'vue'
 
