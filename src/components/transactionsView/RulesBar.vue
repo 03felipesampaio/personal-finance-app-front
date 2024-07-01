@@ -127,7 +127,6 @@ function removeEffectInput(effectInput) {
 function copyRule() {
   const ruleCopy = { ...rule.value }
 
-  ruleCopy.pattern = '^' + ruleCopy.pattern
   ruleCopy.effects = ruleCopy.effects.reduce((acc, effect) => {
     if (effect.column !== null && effect.value !== null) acc[effect.column] = effect.value
     return acc
@@ -190,6 +189,7 @@ async function addRuleAndEffects() {
   }
 
   rule.value = getCleanRule()
+  emit('fetchMatchedTransactions', [])
 }
 </script>
 
