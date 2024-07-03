@@ -117,11 +117,45 @@ async function createRule(rule) {
   return data
 }
 
+// Analytics
+async function getMonthlyBalance() {
+  let response = null
+  let data = null
+
+  response = await axios.get(url + '/analytics/ballance')
+  data = await response.data
+
+  return data
+}
+
+async function getBillsValuesByBank() {
+  let response = null
+  let data = null
+
+  response = await axios.get(url + '/analytics/bills')
+  data = await response.data
+
+  return data
+}
+
+async function getExpensesByCategory() {
+  let response = null
+  let data = null
+
+  response = await axios.get(url + '/analytics/expenses/category')
+  data = await response.data
+
+  return data
+}
+
 export {
   schemas,
   getAllSources,
   setupSourcesToSidePannel,
   getTransactionsFromSourceID,
   tryRule,
-  createRule
+  createRule,
+  getMonthlyBalance,
+  getBillsValuesByBank,
+  getExpensesByCategory
 }
