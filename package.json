@@ -11,9 +11,12 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "apexcharts": "^3.49.2",
     "axios": "^1.7.2",
     "dotenv": "^16.4.5",
-    "vue": "^3.4.21"
+    "vue": "^3.4.21",
+    "vue-apexcharts": "^1.6.2",
+    "vue3-apexcharts": "^1.5.3"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",

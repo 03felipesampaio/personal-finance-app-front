@@ -4,7 +4,11 @@
     <div id="main-tab">
       <UploadFiles v-if="selectedSideBar === sideBarOptions.IMPORT" />
       <TransactionsTab v-if="selectedSideBar === sideBarOptions.TRANSACTIONS" />
-      <AnalyticsTab v-if="selectedSideBar === sideBarOptions.VIEWS" />
+      <Suspense>
+        <AnalyticsTab v-if="selectedSideBar === sideBarOptions.ANALYTICS" />
+
+        <template #fallback> Loading... </template>
+      </Suspense>
     </div>
   </div>
 </template>
