@@ -26,8 +26,39 @@
 import { getMonthlyBalance, getBillsValuesByBank, getExpensesByCategory } from '../../api'
 
 const monthlyBalance = await getMonthlyBalance()
-const billValues = await getBillsValuesByBank()
+const billValues = pivotBy(
+  await getBillsValuesByBank(),
+  'reference_month',
+  'bank_name',
+  'bill_value'
+)
 const expensesByCategory = (await getExpensesByCategory()).sort((x, y) => x.value < y.value)
+
+function pivotBy(data, indexCol, col, valueCol) {
+  const uniqueIndexCol = [...new Set(data.map((row) => row[indexCol]))]
+  const uniqueCol = [...new Set(data.map((row) => row[col]))]
+
+  const pivoted = []
+  for (const index of uniqueIndexCol) {
+    const newRow = {}
+
+    newRow[indexCol] = index
+
+    for (const value of uniqueCol) newRow[value] = null
+
+    pivoted.push(newRow)
+  }
+
+  for (const row of data) {
+    const pivotedRow = pivoted.find((x) => x[indexCol] === row[indexCol])
+
+    pivotedRow[row[col]] = row[valueCol]
+  }
+
+  return pivoted
+}
+
+// console.log(pivotBy(await billValues, 'reference_month', 'bank_name', 'bill_value'))
 
 const balanceChart = {
   options: {
@@ -35,15 +66,28 @@ const balanceChart = {
       id: 'ballance-chart'
     },
     xaxis: {
-      type: 'datetime'
+      type: 'datetime',
+      categories: monthlyBalance.map((bal) => `${bal.month}-01`)
+    },
+    yaxis: {
+      labels: {
+        formatter: (value) => `R$ ${value}`
+      }
+    },
+    title: {
+      text: 'Incomes and Expenses'
     }
   },
   series: [
     {
-      name: 'Ballance',
-      data: monthlyBalance.map((bal) => {
-        return { x: `${bal.month}-01`, y: bal.total_incomes }
-      })
+      name: 'Expenses',
+      data: monthlyBalance.map((bal) => bal.total_expenses),
+      color: '#F4442E'
+    },
+    {
+      name: 'Income',
+      data: monthlyBalance.map((bal) => bal.total_incomes)
+      // color: '#04724D'
     }
   ]
 }
@@ -51,36 +95,33 @@ const balanceChart = {
 const billChart = {
   options: {
     xaxis: {
-      type: 'datetime'
+      type: 'datetime',
+      categories: billValues.map((bill) => bill.reference_month)
+    },
+    yaxis: {
+      labels: {
+        formatter: (value) => `R$ ${value}`
+      }
     },
     dataLabels: {
       enabled: false
+    },
+    title: {
+      text: 'Credit Card Bills'
+    },
+    chart: {
+      stacked: true
     }
-    // bar: {
-
-    // }
-    // chart: {
-    //   stacked: true,
-    //   stackedType: '100%'
-    // }
   },
   series: [
     {
       name: 'Inter',
-      data: billValues
-        .filter((bill) => bill.bank_name === 'Inter')
-        .map((bill) => {
-          return { x: `${bill.reference_month}-01`, y: bill.bill_value }
-        }),
+      data: billValues.map((bill) => bill['Inter']),
       color: '#E56700'
     },
     {
       name: 'Nubank',
-      data: billValues
-        .filter((bill) => bill.bank_name === 'Nubank')
-        .map((bill) => {
-          return { x: `${bill.reference_month}-01`, y: bill.bill_value }
-        }),
+      data: billValues.map((bill) => bill['Nubank']),
       color: '#612F74'
     }
   ]
@@ -88,7 +129,10 @@ const billChart = {
 
 const categoryChart = {
   options: {
-    labels: expensesByCategory.map((cat) => cat.category)
+    labels: expensesByCategory.map((cat) => cat.category),
+    title: {
+      text: 'Expenses by Category'
+    }
   },
   series: expensesByCategory.map((cat) => cat.value)
 }
