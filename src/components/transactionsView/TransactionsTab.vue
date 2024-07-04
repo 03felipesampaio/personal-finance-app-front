@@ -42,6 +42,8 @@
 </template>
 
 <script setup>
+import dayjs from 'dayjs'
+
 import SourceBar from './SourceBar.vue'
 import TransactionsTable from './TransactionsTable.vue'
 import RulesBar from './RulesBar.vue'
@@ -104,8 +106,10 @@ const matchedTransactions = ref([])
 watch(checkedFiles, async () => {
   for (const checkedFile of checkedFiles.value) {
     if (transactions.value.filter((trn) => trn.sourceId === checkedFile).length === 0) {
-      const newTransactionsResponse = await getTransactionsFromSourceID(checkedFile)
-      transactions.value.push(...newTransactionsResponse.data)
+      const newTransactionsResponse = (await getTransactionsFromSourceID(checkedFile)).data
+      // Transform date in date object
+      for (const row of newTransactionsResponse) row.date = dayjs(row.date)
+      transactions.value.push(...newTransactionsResponse)
     }
   }
 })
@@ -130,7 +134,7 @@ const transactionsFiltered = computed(() => {
     }
   }
 
-  return filteredTransactions
+  return filteredTransactions.sort((a, b) => a.date < b.date)
 })
 
 const pattern = ref('')

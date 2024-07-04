@@ -23,10 +23,12 @@
         >
           <!-- <td>{{ trn.sourceId }}</td> -->
           <td v-for="col in tableColumns" :key="trn.id + '_' + col">
-            {{ trn[col] }}
+            {{ col !== 'date' ? trn[col] : false }}
+            <!-- {{ trn[col] }} -->
+            <!-- {{ col!=='date'? trn[col]: trn[col].format('DD/MM/YY')) }} -->
           </td>
           <!-- <td>{{ trn.date }}</td>
-          <td>{{ trn.description }}</td>
+          <td>{{ trn.description }}</td>s
           <td>{{ trn.place }}</td>
           <td>{{ trn.category }}</td>
           <td>{{ trn.value }}</td> -->
