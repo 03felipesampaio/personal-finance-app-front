@@ -3,13 +3,6 @@
     <table id="table-transactions">
       <thead>
         <tr>
-          <!-- <th>File ID</th> -->
-          <!-- <th>Date</th>
-          <th>Description</th>
-          <th>Place</th>
-          <th>Category</th>
-          <th>Value</th> -->
-
           <th v-for="col in tableColumns" :key="col">
             {{ col }}
           </th>
@@ -23,13 +16,8 @@
         >
           <!-- <td>{{ trn.sourceId }}</td> -->
           <td v-for="col in tableColumns" :key="trn.id + '_' + col">
-            {{ trn[col] }}
+            {{ col !== 'date' ? trn[col] : trn[col].format('DD/MM/YY') }}
           </td>
-          <!-- <td>{{ trn.date }}</td>
-          <td>{{ trn.description }}</td>
-          <td>{{ trn.place }}</td>
-          <td>{{ trn.category }}</td>
-          <td>{{ trn.value }}</td> -->
         </tr>
       </tbody>
     </table>
