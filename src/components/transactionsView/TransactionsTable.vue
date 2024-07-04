@@ -1,24 +1,35 @@
 <template>
   <div class="main-pannel-item" id="transactions-table-pannel">
     <table id="table-transactions">
-      <thead >
+      <thead>
         <tr>
           <!-- <th>File ID</th> -->
-          <th>Date</th>
+          <!-- <th>Date</th>
           <th>Description</th>
           <th>Place</th>
           <th>Category</th>
-          <th>Value</th>
+          <th>Value</th> -->
+
+          <th v-for="col in tableColumns" :key="col">
+            {{ col }}
+          </th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="trn in transactions" :key="trn.id" :class="{highlited: patternMatchedTransactionIds.includes(trn.id)}">
+        <tr
+          v-for="trn in transactions"
+          :key="trn.id"
+          :class="{ highlited: patternMatchedTransactionIds.includes(trn.id) }"
+        >
           <!-- <td>{{ trn.sourceId }}</td> -->
-          <td>{{ trn.date }}</td>
+          <td v-for="col in tableColumns" :key="trn.id + '_' + col">
+            {{ trn[col] }}
+          </td>
+          <!-- <td>{{ trn.date }}</td>
           <td>{{ trn.description }}</td>
           <td>{{ trn.place }}</td>
           <td>{{ trn.category }}</td>
-          <td>{{ trn.value }}</td>
+          <td>{{ trn.value }}</td> -->
         </tr>
       </tbody>
     </table>
@@ -27,7 +38,7 @@
 
 <script setup>
 const transactions = defineModel('transactions')
-defineProps(['patternMatchedTransactionIds'])
+defineProps(['tableColumns', 'patternMatchedTransactionIds'])
 </script>
 
 <style>
@@ -47,14 +58,14 @@ defineProps(['patternMatchedTransactionIds'])
   width: 100%;
 }
 
-
 #table-transactions thead tr {
   background-color: #009879;
   color: #ffffff;
   text-align: left;
 }
 
-#table-transactions th, #table-transactions td {
+#table-transactions th,
+#table-transactions td {
   padding: 5px 5px;
 }
 
