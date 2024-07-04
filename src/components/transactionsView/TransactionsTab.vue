@@ -42,7 +42,7 @@
 </template>
 
 <script setup>
-import dayjs from 'dayjs'
+
 
 import SourceBar from './SourceBar.vue'
 import TransactionsTable from './TransactionsTable.vue'
@@ -107,8 +107,6 @@ watch(checkedFiles, async () => {
   for (const checkedFile of checkedFiles.value) {
     if (transactions.value.filter((trn) => trn.sourceId === checkedFile).length === 0) {
       const newTransactionsResponse = (await getTransactionsFromSourceID(checkedFile)).data
-      // Transform date in date object
-      for (const row of newTransactionsResponse) row.date = dayjs(row.date)
       transactions.value.push(...newTransactionsResponse)
     }
   }

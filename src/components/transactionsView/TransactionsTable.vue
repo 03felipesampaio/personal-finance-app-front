@@ -16,7 +16,7 @@
         >
           <!-- <td>{{ trn.sourceId }}</td> -->
           <td v-for="col in tableColumns" :key="trn.id + '_' + col">
-            {{ col !== 'date' ? trn[col] : trn[col].format('DD/MM/YY') }}
+            {{ col !== 'date' ? trn[col] : dayjs(trn[col]).format('DD/MM/YY') }}
           </td>
         </tr>
       </tbody>
@@ -25,6 +25,8 @@
 </template>
 
 <script setup>
+import dayjs from 'dayjs'
+
 const transactions = defineModel('transactions')
 defineProps(['tableColumns', 'patternMatchedTransactionIds'])
 </script>
