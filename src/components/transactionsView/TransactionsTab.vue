@@ -22,6 +22,10 @@
       v-model:sourceBarFileOrder="sourceBarFileOrder"
       class="transactions-menu-item"
     />
+    <FiltersBar 
+      v-if="selectedSideBar === sideBarOptions.FILTERS" 
+      :transactions-fields="schemas.transactions"
+    />
     <RulesBar
       v-if="selectedSideBar === sideBarOptions.RULES"
       :transactions-fields="schemas.transactions"
@@ -47,6 +51,7 @@
 import SourceBar from './SourceBar.vue'
 import TransactionsTable from './TransactionsTable.vue'
 import RulesBar from './RulesBar.vue'
+import FiltersBar from './FiltersBar.vue'
 // import {mockedGetAllSourcesResponse, transactions} from '../../mockApi'
 import {
   schemas,
