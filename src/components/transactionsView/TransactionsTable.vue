@@ -3,8 +3,8 @@
     <table id="table-transactions">
       <thead>
         <tr>
-          <th v-for="col in tableColumns" :key="col">
-            {{ col }}
+          <th v-for="col in tableColumns" :key="col.name">
+            {{ col.showName }}
           </th>
         </tr>
       </thead>
@@ -15,8 +15,8 @@
           :class="{ highlited: patternMatchedTransactionIds.includes(trn.id) }"
         >
           <!-- <td>{{ trn.sourceId }}</td> -->
-          <td v-for="col in tableColumns" :key="trn.id + '_' + col">
-            {{ col !== 'date' ? trn[col] : dayjs(trn[col]).format('DD/MM/YY') }}
+          <td v-for="col in tableColumns" :key="trn.id + '_' + col.name">
+            {{ col.type !== 'date' ? trn[col.name] : dayjs(trn[col.name]).format('DD/MM/YY') }}
           </td>
         </tr>
       </tbody>

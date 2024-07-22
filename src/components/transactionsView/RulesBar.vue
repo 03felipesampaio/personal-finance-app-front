@@ -65,8 +65,8 @@
       <div id="side-effects">
         <div v-for="(effectInput, i) in rule.effects" class="side-effect" :key="'effect_' + i">
           <select class="column-option-effect" v-model="effectInput.column">
-            <option v-for="field in transactionsFields" :value="field" :key="field">
-              {{ field }}
+            <option v-for="field in transactionsFields" :value="field.name" :key="field">
+              {{ field.showName }}
             </option>
             <!-- <option value="place">Place</option>
             <option value="category">Category</option> -->

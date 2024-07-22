@@ -24,11 +24,11 @@
     />
     <FiltersBar 
       v-if="selectedSideBar === sideBarOptions.FILTERS" 
-      :transactions-fields="schemas.transactions"
+      :transactions-fields="schemas.transactions.filter(field => field.showOnFilterOptions)"
     />
     <RulesBar
       v-if="selectedSideBar === sideBarOptions.RULES"
-      :transactions-fields="schemas.transactions"
+      :transactions-fields="schemas.transactions.filter(field => field.showOnRuleOptions)"
       v-model:pattern="pattern"
       v-model:transactions="transactionsFiltered"
       v-model:show-only-matched="showOnlyMatched"
@@ -37,7 +37,7 @@
     />
   </div>
   <TransactionsTable
-    :table-columns="schemas.transactions"
+    :table-columns="schemas.transactions.filter(field => field.showOnTable)"
     :patternMatchedTransactionIds="matchedTransactions.map((trn) => trn.id)"
     v-model:transactions="transactionsFiltered"
   />
