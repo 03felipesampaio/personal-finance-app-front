@@ -7,31 +7,191 @@ const url = 'http://127.0.0.1:8000'
 
 let schemas = {
   sources: [
-    'id',
-    'type',
-    'bankName',
-    'startDate',
-    'endDate',
-    'fileName',
-    'fileHash',
-    'accountNumber',
-    'referenceMonth',
-    'billValue'
+    {
+      name: 'id',
+      showName: 'ID',
+      type: 'numeric',
+      nullable: false,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
+    {
+      name: 'type',
+      showName: 'Type',
+      type: 'string',
+      nullable: false,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
+    {
+      name: 'bankName',
+      showName: 'Bank name',
+      type: 'string',
+      nullable: false,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
+    {
+      name: 'startDate',
+      showName: 'Start date',
+      type: 'date',
+      nullable: false,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
+    {
+      name: 'endDate',
+      showName: 'End date',
+      type: 'date',
+      nullable: false,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
+    {
+      name: 'fileName',
+      showName: 'File name',
+      type: 'string',
+      nullable: false,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
+    {
+      name: 'fileHash',
+      showName: 'File hash',
+      type: 'string',
+      nullable: false,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
+    {
+      name: 'accountNumber',
+      showName: 'Account number',
+      type: 'string',
+      nullable: false,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
+    {
+      name: 'referenceMonth',
+      showName: 'Reference month',
+      type: 'string',
+      nullable: false,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
+    {
+      name: 'billValue',
+      showName: 'Bill value',
+      type: 'numeric',
+      nullable: false,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
   ],
   transactions: [
-    'sourceId',
-    'id',
-    'date',
-    'type',
-    'description',
-    'place',
-    'category',
-    'value',
-    'currentInstallments',
-    'totalInstallments'
-  ],
-  rules: [null, null, null, null]
-}
+    {
+      name: 'sourceId',
+      showName: 'Source ID',
+      type: 'numeric',
+      nullable: false,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
+    {
+      name: 'id',
+      showName: 'ID',
+      type: 'numeric',
+      nullable: false,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
+    {
+      name: 'date',
+      showName: 'Date',
+      type: 'date',
+      nullable: false,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
+    {
+      name: 'type',
+      showName: 'Type',
+      type: 'string',
+      nullable: false,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
+    {
+      name: 'description',
+      showName: 'Description',
+      type: 'string',
+      nullable: false,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
+    {
+      name: 'place',
+      showName: 'Place',
+      type: 'string',
+      nullable: false,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
+    {
+      name: 'category',
+      showName: 'Category',
+      type: 'string',
+      nullable: false,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
+    {
+      name: 'value',
+      showName: 'Value',
+      type: 'numeric',
+      nullable: false,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
+    {
+      name: 'currentInstallments',
+      showName: 'Current Installments',
+      type: 'numeric',
+      nullable: true,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    },
+    {
+      name: 'totalInstallments',
+      showName: 'Total Installments',
+      type: 'numeric',
+      nullable: true,
+      showOnTable: true,
+      showOnRuleOptions: true,
+      showOnFilterOptions: true
+    }
+  ]
+};
+
 
 // let schemas = {}
 
@@ -69,7 +229,7 @@ async function setupSourcesToSidePannel(sources) {
     fileTree[source.bankName][source.type].push({
       sourceID: source.id,
       fileName: source.fileName,
-      show: false
+      show: true
     })
   }
 
@@ -148,6 +308,17 @@ async function getExpensesByCategory() {
   return data
 }
 
+
+async function filterTransactions(payload) {
+  let response = null
+  let data = null
+
+  response = await axios.post(url + '/filters', payload)
+  data = await response.data
+
+  return data
+}
+
 export {
   schemas,
   getAllSources,
@@ -157,5 +328,6 @@ export {
   createRule,
   getMonthlyBalance,
   getBillsValuesByBank,
-  getExpensesByCategory
+  getExpensesByCategory,
+  filterTransactions
 }
