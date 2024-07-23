@@ -3,10 +3,13 @@
     <LeftSideBar :sideBarOptions="sideBarOptions" v-model:selectedSideBar="selectedSideBar" />
     <div id="main-tab">
       <UploadFiles v-if="selectedSideBar === sideBarOptions.IMPORT" />
-      <TransactionsTab v-if="selectedSideBar === sideBarOptions.TRANSACTIONS" />
+      
+      <Suspense>
+        <TransactionsTab v-if="selectedSideBar === sideBarOptions.TRANSACTIONS" />
+        <template #fallback> Loading... </template>
+      </Suspense>
       <Suspense>
         <AnalyticsTab v-if="selectedSideBar === sideBarOptions.ANALYTICS" />
-
         <template #fallback> Loading... </template>
       </Suspense>
     </div>
