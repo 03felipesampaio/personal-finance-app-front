@@ -13,6 +13,7 @@
   "dependencies": {
     "apexcharts": "^3.49.2",
     "axios": "^1.7.2",
+    "dayjs": "^1.11.11",
     "dotenv": "^16.4.5",
     "vue": "^3.4.21",
     "vue-apexcharts": "^1.6.2",

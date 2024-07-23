@@ -3,15 +3,8 @@
     <table id="table-transactions">
       <thead>
         <tr>
-          <!-- <th>File ID</th> -->
-          <!-- <th>Date</th>
-          <th>Description</th>
-          <th>Place</th>
-          <th>Category</th>
-          <th>Value</th> -->
-
-          <th v-for="col in tableColumns" :key="col">
-            {{ col }}
+          <th v-for="col in tableColumns" :key="col.name">
+            {{ col.showName }}
           </th>
         </tr>
       </thead>
@@ -22,14 +15,9 @@
           :class="{ highlited: patternMatchedTransactionIds.includes(trn.id) }"
         >
           <!-- <td>{{ trn.sourceId }}</td> -->
-          <td v-for="col in tableColumns" :key="trn.id + '_' + col">
-            {{ trn[col] }}
+          <td v-for="col in tableColumns" :key="trn.id + '_' + col.name">
+            {{ col.type !== 'date' ? trn[col.name] : dayjs(trn[col.name]).format('DD/MM/YY') }}
           </td>
-          <!-- <td>{{ trn.date }}</td>
-          <td>{{ trn.description }}</td>
-          <td>{{ trn.place }}</td>
-          <td>{{ trn.category }}</td>
-          <td>{{ trn.value }}</td> -->
         </tr>
       </tbody>
     </table>
@@ -37,6 +25,8 @@
 </template>
 
 <script setup>
+import dayjs from 'dayjs'
+
 const transactions = defineModel('transactions')
 defineProps(['tableColumns', 'patternMatchedTransactionIds'])
 </script>

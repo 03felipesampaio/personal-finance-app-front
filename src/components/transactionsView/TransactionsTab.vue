@@ -22,9 +22,15 @@
       v-model:sourceBarFileOrder="sourceBarFileOrder"
       class="transactions-menu-item"
     />
+    <FiltersBar 
+      v-if="selectedSideBar === sideBarOptions.FILTERS" 
+      :transactions-fields="schemas.transactions.filter(field => field.showOnFilterOptions)"
+      @filter="(trns) => filteredTransactionsIds = trns"
+      @remove-filter="() => filteredTransactionsIds = []"
+    />
     <RulesBar
       v-if="selectedSideBar === sideBarOptions.RULES"
-      :transactions-fields="schemas.transactions"
+      :transactions-fields="schemas.transactions.filter(field => field.showOnRuleOptions)"
       v-model:pattern="pattern"
       v-model:transactions="transactionsFiltered"
       v-model:show-only-matched="showOnlyMatched"
@@ -33,8 +39,9 @@
     />
   </div>
   <TransactionsTable
-    :table-columns="schemas.transactions"
-    :patternMatchedTransactionIds="matchedTransactions.map((trn) => trn.id)"
+    :table-columns="schemas.transactions.filter(field => field.showOnTable)"
+    :pattern-matched-transaction-ids="matchedTransactions.map((trn) => trn.id)"
+    :filtered-transactions-ids="filteredTransactionsIds"
     v-model:transactions="transactionsFiltered"
   />
   <!-- <div id="transactions-table-tab">
@@ -42,9 +49,12 @@
 </template>
 
 <script setup>
+
+
 import SourceBar from './SourceBar.vue'
 import TransactionsTable from './TransactionsTable.vue'
 import RulesBar from './RulesBar.vue'
+import FiltersBar from './FiltersBar.vue'
 // import {mockedGetAllSourcesResponse, transactions} from '../../mockApi'
 import {
   schemas,
@@ -100,12 +110,13 @@ const checkedFiles = computed(() => {
 // Transactions fetching and filtering
 const transactions = ref([])
 const matchedTransactions = ref([])
+const filteredTransactionsIds = ref([])
 
 watch(checkedFiles, async () => {
   for (const checkedFile of checkedFiles.value) {
     if (transactions.value.filter((trn) => trn.sourceId === checkedFile).length === 0) {
-      const newTransactionsResponse = await getTransactionsFromSourceID(checkedFile)
-      transactions.value.push(...newTransactionsResponse.data)
+      const newTransactionsResponse = (await getTransactionsFromSourceID(checkedFile)).data
+      transactions.value.push(...newTransactionsResponse)
     }
   }
 })
@@ -114,6 +125,9 @@ const transactionsFiltered = computed(() => {
   let filteredTransactions = transactions.value.filter((trn) =>
     checkedFiles.value.includes(trn.sourceId)
   )
+  if (filteredTransactionsIds.value.length > 0) {
+    filteredTransactions = filteredTransactions.filter(trn => filteredTransactionsIds.value.includes(trn.id))
+  }
 
   if (showOnlyMatched.value) {
     filteredTransactions = filteredTransactions.filter((trn) =>
@@ -130,7 +144,7 @@ const transactionsFiltered = computed(() => {
     }
   }
 
-  return filteredTransactions
+  return filteredTransactions.sort((a, b) => a.date < b.date)
 })
 
 const pattern = ref('')
