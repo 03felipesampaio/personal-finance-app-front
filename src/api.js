@@ -309,11 +309,32 @@ async function getExpensesByCategory() {
 }
 
 
-async function filterTransactions(payload) {
+async function createFilter(payload) {
   let response = null
   let data = null
 
   response = await axios.post(url + '/filters', payload)
+  data = await response.data
+
+  return data
+}
+
+async function getFilters() {
+  let response = null
+  let data = null
+
+  response = await axios.get(url + '/filters')
+  data = await response.data
+
+  return data
+}
+
+
+async function applyFilter(name) {
+  let response = null
+  let data = null
+
+  response = await axios.get(url + '/filters/' + name + '/apply')
   data = await response.data
 
   return data
@@ -329,5 +350,7 @@ export {
   getMonthlyBalance,
   getBillsValuesByBank,
   getExpensesByCategory,
-  filterTransactions
+  createFilter,
+  getFilters,
+  applyFilter
 }
