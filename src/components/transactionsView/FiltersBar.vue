@@ -29,7 +29,11 @@ function getOptions(dataType) {
                     name: 'value',
                     nullable: false,
                     default: null,
-                    value: null
+                    value: null,
+                    includeNull: false,
+                    negative: false,
+                    showIncludeNull: true,
+                    inputType: 'text'
                 }
             ]
         },
@@ -42,7 +46,11 @@ function getOptions(dataType) {
                     name: 'value',
                     nullable: false,
                     default: null,
-                    value: null
+                    value: null,
+                    includeNull: false,
+                    negative: false,
+                    showIncludeNull: true,
+                    inputType: 'text'
                 }
             ]
         },
@@ -55,29 +63,48 @@ function getOptions(dataType) {
                     name: 'value',
                     nullable: false,
                     default: null,
-                    value: null
+                    value: null,
+                    includeNull: false,
+                    negative: false,
+                    showIncludeNull: true,
+                    inputType: 'text'
                 }
             ]
         },
-        // {
-        //     option: 'range',
-        //     optionShow: 'Range',
-        //     dataTypes: ['numeric', 'date'],
-        //     fields: [
-        //         {
-        //             name: 'start',
-        //             nullable: true,
-        //             default: null,
-        //             value: null
-        //         },
-        //         {
-        //             name: 'end',
-        //             nullable: true,
-        //             default: null,
-        //             value: null
-        //         }
-        //     ]
-        // },
+        {
+            option: 'ge',
+            optionShow: 'Greater than or equal',
+            dataTypes: ['numeric', 'date'],
+            fields: [
+                {
+                    name: 'value',
+                    nullable: false,
+                    default: null,
+                    value: null,
+                    includeNull: false,
+                    negative: false,
+                    showIncludeNull: true,
+                    inputType: 'text'
+                }
+            ]
+        },
+        {
+            option: 'le',
+            optionShow: 'Less than or equal',
+            dataTypes: ['numeric', 'date'],
+            fields: [
+                {
+                    name: 'value',
+                    nullable: false,
+                    default: null,
+                    value: null,
+                    includeNull: false,
+                    negative: false,
+                    showIncludeNull: true,
+                    inputType: 'text'
+                }
+            ]
+        },
         {
             option: 'isNull',
             optionShow: 'Is null',
@@ -87,7 +114,11 @@ function getOptions(dataType) {
                     name: 'value',
                     nullable: false,
                     default: false,
-                    value: null
+                    value: null,
+                    includeNull: false,
+                    negative: false,
+                    showIncludeNull: false,
+                    inputType: 'checkbox'
                 }
             ]
         },
@@ -100,7 +131,11 @@ function getOptions(dataType) {
                     name: 'value',
                     nullable: false,
                     default: null,
-                    value: null
+                    value: null,
+                    includeNull: false,
+                    negative: false,
+                    showIncludeNull: true,
+                    inputType: 'text'
                 }
             ]
         },
@@ -113,7 +148,11 @@ function getOptions(dataType) {
                     name: 'value',
                     nullable: false,
                     default: null,
-                    value: null
+                    value: null,
+                    includeNull: false,
+                    negative: false,
+                    showIncludeNull: true,
+                    inputType: 'text'
                 }
             ]
         },
@@ -126,11 +165,15 @@ function getOptions(dataType) {
                     name: 'value',
                     nullable: false,
                     default: false,
-                    value: null
+                    value: null,
+                    includeNull: false,
+                    negative: false,
+                    showIncludeNull: true,
+                    inputType: 'text'
                 }
             ]
         }
-    ]
+    ];
 
     return operations.filter(op => op.dataTypes.includes(dataType))
 }
@@ -173,14 +216,18 @@ function clearRestrictions() {
 }
 
 async function sendFilter() {
+    if (filter.value.name === '') {
+        throw new Error('Filter name cant be blank')
+    }
+
     const payloadFilter = {
         name: filter.value.name,
         restrictions: filter.value.restrictions.map(rest => {
             return {
                 col_name: rest.column,
                 operation: rest.operation.option,
-                negative: false,
-                includes_null: false,
+                negative: rest.operation.fields[0].negative,
+                includes_null: rest.operation.fields[0].includeNull,
                 value: rest.operation.fields[0].value
             }
         })
@@ -202,7 +249,7 @@ async function sendFilter() {
         <button @click="$emit('removeFilter')">Clear filter</button>
         <div id="add-filters-menu">
             <h4>Add filters</h4>
-            <input type="text" v-model="filter.name" />
+            <input type="text" v-model="filter.name" placeholder="Name the filter" />
             <div id="restrictions">
                 <div class="restriction" v-for="(rest, i) in filter.restrictions" :key="i">
                     <select class="column-option-effect" v-model="rest.column" @change="changeColumn(rest)">
@@ -217,8 +264,14 @@ async function sendFilter() {
                             {{ operation.optionShow }}
                         </option>
                     </select>
-                    <input v-for="field in rest.operation.fields" type="text" :key="field" :placeholder="field.name"
-                        v-model="field.value" />
+                    <div class="input-field" v-for="field in rest.operation.fields" :key="field">
+                        <label :for="rest.column + field.name">{{ field.name }}</label>
+                        <input :type="field.inputType" v-model="field.value" :id="rest.column + field.name" />
+                        <input type="checkbox" v-model="field.negative" :id="rest.column + field.name + 'negative'">
+                        <label :for="rest.column + field.name + 'negative'">Negative</label>
+                        <input v-if="field.showIncludeNull" type="checkbox" v-model="field.includeNull" :id="rest.column + field.name + 'includeNull'">
+                        <label v-if="field.showIncludeNull" :for="rest.column + field.name + 'includeNull'">Include null</label>
+                    </div>
                     <button @click="removeRestriction(rest)">x</button>
                 </div>
             </div>
