@@ -1,168 +1,147 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import { createFilter, applyFilter, getFilters } from '../../api'
 
-defineProps(['transactionsFields'])
+const props = defineProps(['transactionsFields'])
+// TODO Make the filtered transactions as a model insteado of emiting
+// Also, when a transaction is changed, the filters must run again
+const emit = defineEmits(['filter', 'removeFilter'])
+const currentFilter = ref(null)
+
+const filterNames = ref(await getFilters())
+
+watch(currentFilter, async (newFilterName) => {
+    if (newFilterName === null) return;
+
+    const data = await applyFilter(newFilterName)
+    emit('filter', data)
+})
 
 function getOptions(dataType) {
-    const options = {
-        'numeric': [
-            {
-                option: 'equals',
-                fields: [
-                    {
-                        name: 'value',
-                        type: 'numeric',
-                        nullable: false,
-                        default: null,
-                        value: null
-                    }
-                ]
-            },
-            {
-                option: 'range',
-                fields: [
-                    {
-                        name: 'start',
-                        type: 'numeric',
-                        nullable: false,
-                        default: null,
-                        value: null
-                    },
-                    {
-                        name: 'end',
-                        type: 'numeric',
-                        nullable: false,
-                        default: null,
-                        value: null
-                    }
-                ]
-            },
-            {
-                option: 'isBlank',
-                fields: [
-                    {
-                        name: 'value',
-                        type: 'boolean',
-                        nullable: false,
-                        default: false,
-                        value: null
-                    }
-                ]
-            }
-        ],
-        'datetime': [
-            {
-                option: 'equals',
-                fields: [
-                    {
-                        name: 'value',
-                        type: 'datetime',
-                        nullable: false,
-                        default: null,
-                        value: null
-                    }
-                ]
-            },
-            {
-                option: 'range',
-                fields: [
-                    {
-                        name: 'start',
-                        type: 'datetime',
-                        nullable: false,
-                        default: null,
-                        value: null
-                    },
-                    {
-                        name: 'end',
-                        type: 'datetime',
-                        nullable: false,
-                        default: null,
-                        value: null
-                    }
-                ]
-            },
-            {
-                option: 'isBlank',
-                fields: [
-                    {
-                        name: 'value',
-                        type: 'boolean',
-                        nullable: false,
-                        default: false,
-                        value: null
-                    }
-                ]
-            }
-        ],
-        'string': [
-            {
-                option: 'startsWith',
-                fields: [
-                    {
-                        name: 'value',
-                        type: 'datetime',
-                        nullable: false,
-                        default: null,
-                        value: null
-                    }
-                ]
-            },
-            {
-                option: 'endsWith',
-                fields: [
-                    {
-                        name: 'start',
-                        type: 'datetime',
-                        nullable: false,
-                        default: null,
-                        value: null
-                    },
-                    {
-                        name: 'end',
-                        type: 'datetime',
-                        nullable: false,
-                        default: null,
-                        value: null
-                    }
-                ]
-            },
-            {
-                option: 'contains',
-                fields: [
-                    {
-                        name: 'value',
-                        type: 'boolean',
-                        nullable: false,
-                        default: false,
-                        value: null
-                    }
-                ]
-            },
-            {
-                option: 'isBlank',
-                fields: [
-                    {
-                        name: 'value',
-                        type: 'boolean',
-                        nullable: false,
-                        default: false,
-                        value: null
-                    }
-                ]
-            }
-        ]
-    }
+    // const newOptions = 
+    const operations = [
+        {
+            option: 'equals',
+            optionShow: 'Equals',
+            dataTypes: ['numeric', 'date', 'string'],
+            fields: [
+                {
+                    name: 'value',
+                    nullable: false,
+                    default: null,
+                    value: null
+                }
+            ]
+        },
+        {
+            option: 'gt',
+            optionShow: 'Greater than',
+            dataTypes: ['numeric', 'date'],
+            fields: [
+                {
+                    name: 'value',
+                    nullable: false,
+                    default: null,
+                    value: null
+                }
+            ]
+        },
+        {
+            option: 'lt',
+            optionShow: 'Less than',
+            dataTypes: ['numeric', 'date'],
+            fields: [
+                {
+                    name: 'value',
+                    nullable: false,
+                    default: null,
+                    value: null
+                }
+            ]
+        },
+        // {
+        //     option: 'range',
+        //     optionShow: 'Range',
+        //     dataTypes: ['numeric', 'date'],
+        //     fields: [
+        //         {
+        //             name: 'start',
+        //             nullable: true,
+        //             default: null,
+        //             value: null
+        //         },
+        //         {
+        //             name: 'end',
+        //             nullable: true,
+        //             default: null,
+        //             value: null
+        //         }
+        //     ]
+        // },
+        {
+            option: 'isNull',
+            optionShow: 'Is null',
+            dataTypes: ['numeric', 'date', 'string'],
+            fields: [
+                {
+                    name: 'value',
+                    nullable: false,
+                    default: false,
+                    value: null
+                }
+            ]
+        },
+        {
+            option: 'starts',
+            optionShow: 'Starts with',
+            dataTypes: ['string'],
+            fields: [
+                {
+                    name: 'value',
+                    nullable: false,
+                    default: null,
+                    value: null
+                }
+            ]
+        },
+        {
+            option: 'ends',
+            optionShow: 'Ends with',
+            dataTypes: ['string'],
+            fields: [
+                {
+                    name: 'value',
+                    nullable: false,
+                    default: null,
+                    value: null
+                }
+            ]
+        },
+        {
+            option: 'contains',
+            optionShow: 'Contains',
+            dataTypes: ['string'],
+            fields: [
+                {
+                    name: 'value',
+                    nullable: false,
+                    default: false,
+                    value: null
+                }
+            ]
+        }
+    ]
 
-    return options[dataType]
+    return operations.filter(op => op.dataTypes.includes(dataType))
 }
+
 
 const filter = ref({
     name: '',
     restrictions: [
         {
             column: 'value',
-            restriction: getOptions('numeric').find(opt => opt.option === 'equals')
+            operation: getOptions('numeric').find(opt => opt.option === 'equals')
         }
     ]
 })
@@ -170,27 +149,45 @@ const filter = ref({
 function addRestriction() {
     filter.value.restrictions.push({
         column: 'value',
-        restriction: getOptions('numeric').find(opt => opt.option === 'equals')
+        operation: getOptions('numeric').find(opt => opt.option === 'equals')
     })
 }
 
 function removeRestriction(restriction) {
-  filter.value.restrictions.splice(filter.value.restrictions.indexOf(restriction), 1)
+    filter.value.restrictions.splice(filter.value.restrictions.indexOf(restriction), 1)
 }
 
 function changeColumn(restriction) {
-    restriction.restriction = getOptions(restriction.column !== 'date' ? 'numeric': 'datetime')[0]
+    // console.log(props.transactionsFields);
+    restriction.operation = getOptions(props.transactionsFields.find(f => f.name === restriction.column).type)[0]
 }
 
-function changeOperation(restriction, newOperation) {
-    restriction.restriction = getOptions(restriction.column !== 'date' ? 'numeric': 'datetime').find(opt => opt.option === newOperation)
-}
+// function changeOperation(restriction, newOperation) {
+//     // restriction.restriction = getOptions(props.transactionsFields.find(f => f.name === restriction.column).type).find(opt => opt.option === newOperation)
+//     // @change="changeOperation(rest, $event.target.value)"
+//     return
+// }
 
 function clearRestrictions() {
     filter.value.restrictions = []
 }
 
-function sendFilter() {
+async function sendFilter() {
+    const payloadFilter = {
+        name: filter.value.name,
+        restrictions: filter.value.restrictions.map(rest => {
+            return {
+                col_name: rest.column,
+                operation: rest.operation.option,
+                negative: false,
+                includes_null: false,
+                value: rest.operation.fields[0].value
+            }
+        })
+    }
+
+    await createFilter(payloadFilter)
+    filterNames.value = await getFilters()
     return filter
 }
 
@@ -199,22 +196,29 @@ function sendFilter() {
 <template>
     <div class="main-pannel-item" id="filters-bar">
         <h3>Filters Bar</h3>
-
+        <select id="filter-selection" v-model="currentFilter">
+            <option v-for="name in filterNames" :key="name" :value="name">{{ name }}</option>
+        </select>
+        <button @click="$emit('removeFilter')">Clear filter</button>
         <div id="add-filters-menu">
             <h4>Add filters</h4>
+            <input type="text" v-model="filter.name" />
             <div id="restrictions">
                 <div class="restriction" v-for="(rest, i) in filter.restrictions" :key="i">
                     <select class="column-option-effect" v-model="rest.column" @change="changeColumn(rest)">
-                        <option v-for="field in transactionsFields" :value="field" :key="field">
-                            {{ field }}
+                        <option v-for="field in transactionsFields" :value="field.name" :key="field.name">
+                            {{ field.showName }}
                         </option>
                     </select>
-                    <select @change="changeOperation(rest, $event.target.value)" v-model="rest.restriction.option">
-                        <option v-for="(operation) in getOptions(rest.column !== 'date' ? 'numeric': 'datetime')" :key="operation.option" :value="operation.option">
-                            {{ operation.option }}
+                    <select v-model="rest.operation">
+                        <option
+                            v-for="(operation) in getOptions(transactionsFields.find(f => f.name === rest.column).type)"
+                            :key="operation.option" :value="operation">
+                            {{ operation.optionShow }}
                         </option>
                     </select>
-                    <input v-for="field in rest.restriction.fields" type="text" :key="field" :placeholder="field.name" v-model="field.value" />
+                    <input v-for="field in rest.operation.fields" type="text" :key="field" :placeholder="field.name"
+                        v-model="field.value" />
                     <button @click="removeRestriction(rest)">x</button>
                 </div>
             </div>
