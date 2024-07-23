@@ -25,6 +25,8 @@
     <FiltersBar 
       v-if="selectedSideBar === sideBarOptions.FILTERS" 
       :transactions-fields="schemas.transactions.filter(field => field.showOnFilterOptions)"
+      @filter="(trns) => filteredTransactionsIds = trns"
+      @remove-filter="() => filteredTransactionsIds = []"
     />
     <RulesBar
       v-if="selectedSideBar === sideBarOptions.RULES"
@@ -38,7 +40,8 @@
   </div>
   <TransactionsTable
     :table-columns="schemas.transactions.filter(field => field.showOnTable)"
-    :patternMatchedTransactionIds="matchedTransactions.map((trn) => trn.id)"
+    :pattern-matched-transaction-ids="matchedTransactions.map((trn) => trn.id)"
+    :filtered-transactions-ids="filteredTransactionsIds"
     v-model:transactions="transactionsFiltered"
   />
   <!-- <div id="transactions-table-tab">
@@ -107,6 +110,7 @@ const checkedFiles = computed(() => {
 // Transactions fetching and filtering
 const transactions = ref([])
 const matchedTransactions = ref([])
+const filteredTransactionsIds = ref([])
 
 watch(checkedFiles, async () => {
   for (const checkedFile of checkedFiles.value) {
@@ -121,6 +125,9 @@ const transactionsFiltered = computed(() => {
   let filteredTransactions = transactions.value.filter((trn) =>
     checkedFiles.value.includes(trn.sourceId)
   )
+  if (filteredTransactionsIds.value.length > 0) {
+    filteredTransactions = filteredTransactions.filter(trn => filteredTransactionsIds.value.includes(trn.id))
+  }
 
   if (showOnlyMatched.value) {
     filteredTransactions = filteredTransactions.filter((trn) =>
